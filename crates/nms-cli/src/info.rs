@@ -109,7 +109,7 @@ fn print_bases(ps: &PlayerStateData, theme: &nms_query::table::TableStyleConfig)
             } else {
                 &base.name
             };
-            let hex = format!("{:012X}", base.galactic_address.0 & 0xFFFF_FFFF_FFFF);
+            let hex = format!("{:012X}", base.galactic_address.portal_packed());
             let glyphs = hex_to_emoji(&hex);
             builder.push_record([
                 name.to_string(),

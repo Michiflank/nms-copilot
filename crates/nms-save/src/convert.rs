@@ -5,6 +5,15 @@ use chrono::DateTime;
 use crate::model::*;
 
 impl RawDiscoveryRecord {
+    /// Custom name from `DM.CN`, set when a player names the discovery.
+    pub fn custom_name(&self) -> Option<String> {
+        self.dm
+            .get("CN")
+            .and_then(|v| v.as_str())
+            .filter(|s| !s.is_empty())
+            .map(str::to_owned)
+    }
+
     /// Convert to an `nms_core::DiscoveryRecord`, or `None` if the discovery
     /// type is unrecognized.
     pub fn to_core_record(&self) -> Option<nms_core::DiscoveryRecord> {
@@ -36,7 +45,7 @@ impl RawDiscoveryRecord {
             discovery_type,
             self.dd.ua.to_galactic_address(0),
             timestamp,
-            None, // Discovery records in the save don't carry display names
+            self.custom_name(),
             discoverer,
             is_uploaded,
         ))
@@ -261,8 +270,8 @@ mod tests {
     #[test]
     fn active_context_season_without_base_context() {
         let json = r#"{
-            "Version": 4740,
-            "Platform": "Win|Final",
+            "Version": 4720,
+            "Platform": "Mac|Final",
             "ActiveContext": "Season",
             "CommonStateData": {"SaveName": "test"},
             "ExpeditionContext": {

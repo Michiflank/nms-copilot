@@ -110,7 +110,7 @@ pub fn extract_systems(save: &SaveRoot) -> HashMap<SystemId, System> {
         if rec.dd.dt != "SolarSystem" {
             continue;
         }
-        let addr = GalacticAddress::from_packed(rec.dd.ua.0, 0);
+        let addr = rec.dd.ua.to_galactic_address(0);
         let sys_id = SystemId::from_address(&addr);
 
         let timestamp = if rec.ows.ts > 0 {
@@ -127,7 +127,7 @@ pub fn extract_systems(save: &SaveRoot) -> HashMap<SystemId, System> {
 
         builders.entry(sys_id).or_insert_with(|| SystemBuilder {
             address: addr,
-            name: None, // System names aren't in discovery records
+            name: rec.custom_name(),
             discoverer,
             timestamp,
             planets: Vec::new(),
@@ -139,7 +139,7 @@ pub fn extract_systems(save: &SaveRoot) -> HashMap<SystemId, System> {
         if rec.dd.dt != "Planet" {
             continue;
         }
-        let addr = GalacticAddress::from_packed(rec.dd.ua.0, 0);
+        let addr = rec.dd.ua.to_galactic_address(0);
         let sys_id = SystemId::from_address(&addr);
         let planet_index = addr.planet_index();
 
@@ -151,7 +151,7 @@ pub fn extract_systems(save: &SaveRoot) -> HashMap<SystemId, System> {
             biome,
             None, // BiomeSubType not extractable from VP
             infested,
-            None, // Planet names aren't in discovery records
+            rec.custom_name(),
             seed_hash,
         );
 

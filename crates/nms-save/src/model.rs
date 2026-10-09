@@ -160,9 +160,18 @@ impl<'de> Deserialize<'de> for PackedGalacticAddress {
 }
 
 impl PackedGalacticAddress {
+    /// Repack into the 48-bit portal layout (`P SSS YY ZZZ XXX`) used by
+    /// `nms_core`.
+    ///
+    /// Saves store 56 bits as `P SSS ?? YY ZZZ XXX`; the extra byte (meaning
+    /// unknown, nearly always zero) is dropped.
+    pub fn portal_packed(&self) -> u64 {
+        (((self.0 >> 40) & 0xFFFF) << 32) | (self.0 & 0xFFFF_FFFF)
+    }
+
     /// Convert to the core `GalacticAddress` type.
     pub fn to_galactic_address(&self, reality_index: u8) -> nms_core::GalacticAddress {
-        nms_core::GalacticAddress::from_packed(self.0, reality_index)
+        nms_core::GalacticAddress::from_packed(self.portal_packed(), reality_index)
     }
 }
 
@@ -206,7 +215,7 @@ pub struct RawDiscoveryRecord {
     #[serde(rename = "DD")]
     pub dd: DiscoveryData,
 
-    /// Discovery metadata (usually empty object).
+    /// Discovery metadata; holds the custom name as `CN` when named.
     #[serde(rename = "DM", default)]
     pub dm: serde_json::Value,
 
@@ -348,6 +357,16 @@ mod tests {
         let json = r#""0x40050003AB8C07""#;
         let addr: PackedGalacticAddress = serde_json::from_str(json).unwrap();
         assert_eq!(addr.0, 0x40050003AB8C07);
+    }
+
+    #[test]
+    fn packed_galactic_address_save_layout() {
+        // P=4, SSS=005, extra byte=00, YY=03, ZZZ=AB8, XXX=C07
+        let addr = PackedGalacticAddress(0x40050003AB8C07);
+        assert_eq!(addr.portal_packed(), 0x400503AB8C07);
+        let ga = addr.to_galactic_address(0);
+        assert_eq!(ga.planet_index(), 4);
+        assert_eq!(ga.solar_system_index(), 0x005);
     }
 
     #[test]

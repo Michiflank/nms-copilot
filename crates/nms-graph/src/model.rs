@@ -373,7 +373,7 @@ mod tests {
                     "Units": 1000000, "Nanites": 5000, "Specials": 200,
                     "PersistentPlayerBases": [
                         {
-                            "BaseVersion": 8, "GalacticAddress": "0x050003AB8C07",
+                            "BaseVersion": 8, "GalacticAddress": "0x05000003AB8C07",
                             "Position": [0.0, 0.0, 0.0], "Forward": [1.0, 0.0, 0.0],
                             "LastUpdateTimestamp": 1700000000, "Objects": [], "RID": "",
                             "Owner": {"LID": "", "UID": "123", "USN": "Test", "PTK": "ST", "TS": 0},
@@ -397,10 +397,10 @@ mod tests {
                     "ReserveStore": 100, "ReserveManaged": 100,
                     "Store": {
                         "Record": [
-                            {"DD": {"UA": "0x002A32F38064", "DT": "SolarSystem", "VP": ["0xAAAA"]}, "DM": {}, "OWS": {"LID": "", "UID": "1", "USN": "Explorer", "PTK": "ST", "TS": 1700000000}, "FL": {"U": 1}},
-                            {"DD": {"UA": "0x050003AB8C07", "DT": "SolarSystem", "VP": ["0xABCD"]}, "DM": {}, "OWS": {"LID": "", "UID": "1", "USN": "Explorer", "PTK": "ST", "TS": 1700000000}, "FL": {"U": 1}},
-                            {"DD": {"UA": "0x150003AB8C07", "DT": "Planet", "VP": ["0xDEAD", 0]}, "DM": {}, "OWS": {"LID": "", "UID": "1", "USN": "Explorer", "PTK": "ST", "TS": 1700000000}, "FL": {"U": 1}},
-                            {"DD": {"UA": "0x0A0002001234", "DT": "SolarSystem", "VP": ["0x1234"]}, "DM": {}, "OWS": {"LID": "", "UID": "1", "USN": "Explorer", "PTK": "ST", "TS": 1700000000}, "FL": {"U": 1}}
+                            {"DD": {"UA": "0x002A0032F38064", "DT": "SolarSystem", "VP": ["0xAAAA"]}, "DM": {}, "OWS": {"LID": "", "UID": "1", "USN": "Explorer", "PTK": "ST", "TS": 1700000000}, "FL": {"U": 1}},
+                            {"DD": {"UA": "0x05000003AB8C07", "DT": "SolarSystem", "VP": ["0xABCD"]}, "DM": {"CN": "Named System"}, "OWS": {"LID": "", "UID": "1", "USN": "Explorer", "PTK": "ST", "TS": 1700000000}, "FL": {"U": 1}},
+                            {"DD": {"UA": "0x15000003AB8C07", "DT": "Planet", "VP": ["0xDEAD", 0]}, "DM": {"CN": "Named Planet"}, "OWS": {"LID": "", "UID": "1", "USN": "Explorer", "PTK": "ST", "TS": 1700000000}, "FL": {"U": 1}},
+                            {"DD": {"UA": "0x0A000002001234", "DT": "SolarSystem", "VP": ["0x1234"]}, "DM": {}, "OWS": {"LID": "", "UID": "1", "USN": "Explorer", "PTK": "ST", "TS": 1700000000}, "FL": {"U": 1}}
                         ]
                     }
                 }
@@ -526,6 +526,15 @@ mod tests {
         let save = minimal_save();
         let model = GalaxyModel::from_save(&save);
         assert!(model.system_by_name("No Such System").is_none());
+    }
+
+    #[test]
+    fn test_from_save_custom_names() {
+        let save = minimal_save();
+        let model = GalaxyModel::from_save(&save);
+        let (_, system) = model.system_by_name("Named System").unwrap();
+        assert_eq!(system.planets.len(), 1);
+        assert_eq!(system.planets[0].name.as_deref(), Some("Named Planet"));
     }
 
     #[test]
