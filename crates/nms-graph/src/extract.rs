@@ -151,7 +151,8 @@ pub fn extract_systems(save: &SaveRoot) -> HashMap<SystemId, System> {
             biome,
             None, // BiomeSubType not extractable from VP
             infested,
-            rec.custom_name(),
+            rec.custom_name()
+                .or_else(|| seed_hash.map(nms_namegen::planet_name)),
             seed_hash,
         );
 
@@ -173,7 +174,15 @@ pub fn extract_systems(save: &SaveRoot) -> HashMap<SystemId, System> {
     builders
         .into_iter()
         .map(|(id, b)| {
-            let system = System::new(b.address, b.name, b.discoverer, b.timestamp, b.planets);
+            // Unrenamed systems have no stored name; the game regenerates it
+            // from the address, and so do we.
+            let name = b.name.or_else(|| {
+                Some(nms_namegen::system_name(
+                    b.address.packed(),
+                    b.address.reality_index,
+                ))
+            });
+            let system = System::new(b.address, name, b.discoverer, b.timestamp, b.planets);
             (id, system)
         })
         .collect()

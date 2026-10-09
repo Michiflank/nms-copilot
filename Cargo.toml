@@ -4,6 +4,7 @@ members = [
     "crates/nms-save",
     "crates/nms-compat",
     "crates/nms-graph",
+    "crates/nms-namegen",
     "crates/nms-query",
     "crates/nms-watch",
     "crates/nms-cache",
@@ -29,6 +30,7 @@ nms-core = { path = "crates/nms-core", version = "0.3.0" }
 nms-save = { path = "crates/nms-save", version = "0.3.0" }
 nms-compat = { path = "crates/nms-compat", version = "0.3.0" }
 nms-graph = { path = "crates/nms-graph", version = "0.3.0" }
+nms-namegen = { path = "crates/nms-namegen", version = "0.3.0" }
 nms-query = { path = "crates/nms-query", version = "0.3.0" }
 nms-watch = { path = "crates/nms-watch", version = "0.3.0" }
 nms-cache = { path = "crates/nms-cache", version = "0.3.0" }

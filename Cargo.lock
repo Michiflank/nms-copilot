@@ -2191,6 +2191,7 @@ dependencies = [
  "csv",
  "log",
  "nms-core",
+ "nms-namegen",
  "nms-save",
  "petgraph",
  "rstar",
@@ -2198,6 +2199,13 @@ dependencies = [
  "serde_json",
  "tempfile",
  "thiserror 2.0.18",
+]
+
+[[package]]
+name = "nms-namegen"
+version = "0.3.0"
+dependencies = [
+ "serde_json",
 ]
 
 [[package]]
