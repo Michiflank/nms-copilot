@@ -38,7 +38,10 @@ fn print_summary(save: &SaveRoot) {
         "Play Time",
         &format_play_time(save.common_state_data.total_play_time),
     ]);
-    builder.push_record(["Game Mode", &format_game_mode(save.base_context.game_mode)]);
+    builder.push_record([
+        "Game Mode",
+        &format_game_mode(save.active_game_context().game_mode),
+    ]);
     builder.push_record(["Galaxy", galaxy.name]);
     builder.push_record([
         "Voxel Position",

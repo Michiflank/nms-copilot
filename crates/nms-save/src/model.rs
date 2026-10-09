@@ -15,7 +15,9 @@ pub struct SaveRoot {
     pub platform: String,
     pub active_context: String,
     pub common_state_data: CommonStateData,
+    #[serde(default)]
     pub base_context: GameContext,
+    #[serde(default)]
     pub expedition_context: GameContext,
     pub discovery_manager_data: DiscoveryManagerData,
 }

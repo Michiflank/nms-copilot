@@ -67,12 +67,20 @@ impl PersistentPlayerBase {
 }
 
 impl SaveRoot {
+    /// Get the `GameContext` for the active context.
+    ///
+    /// Expedition saves report `ActiveContext` as `"Season"` and may omit
+    /// `BaseContext` entirely.
+    pub fn active_game_context(&self) -> &GameContext {
+        match self.active_context.as_str() {
+            "Expedition" | "Season" => &self.expedition_context,
+            _ => &self.base_context,
+        }
+    }
+
     /// Get `PlayerStateData` for the active context.
     pub fn active_player_state(&self) -> &PlayerStateData {
-        match self.active_context.as_str() {
-            "Expedition" => &self.expedition_context.player_state_data,
-            _ => &self.base_context.player_state_data,
-        }
+        &self.active_game_context().player_state_data
     }
 
     /// Convert active player state to `nms_core::PlayerState`.
@@ -247,6 +255,24 @@ mod tests {
             "DiscoveryManagerData": {"DiscoveryData-v1": {"Store": {"Record": []}}}
         }"#;
         let save: SaveRoot = serde_json::from_str(json).unwrap();
+        assert_eq!(save.active_player_state().units, 111);
+    }
+
+    #[test]
+    fn active_context_season_without_base_context() {
+        let json = r#"{
+            "Version": 4740,
+            "Platform": "Win|Final",
+            "ActiveContext": "Season",
+            "CommonStateData": {"SaveName": "test"},
+            "ExpeditionContext": {
+                "GameMode": 6,
+                "PlayerStateData": {"Units": 111}
+            },
+            "DiscoveryManagerData": {"DiscoveryData-v1": {"Store": {"Record": []}}}
+        }"#;
+        let save: SaveRoot = serde_json::from_str(json).unwrap();
+        assert_eq!(save.active_game_context().game_mode, 6);
         assert_eq!(save.active_player_state().units, 111);
     }
 
